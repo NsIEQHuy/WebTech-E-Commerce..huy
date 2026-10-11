@@ -1,0 +1,988 @@
+/* ==========================================================================
+   BLAKLETTERPRESS — STYLESHEET
+   Môn học: Công nghệ web và dịch vụ trực tuyến
+   Bài tập: Bài tập 4 - Xây dựng CSS Responsive (Không sửa HTML)
+   Chủ đề: Xưởng in letterpress thủ công tại Hà Nội
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GOOGLE FONTS & DESIGN TOKENS
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+	/* Typography */
+	--font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+	--font-brand: 'Cinzel', 'Playfair Display', Georgia, serif;
+	--font-body: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+	/* Color Palette — Artisan Paper & Vintage Ink Theme */
+	--color-bg: #f7f4ee;
+	--color-bg-alt: #f0ebe1;
+	--color-surface: #ffffff;
+	--color-surface-soft: #fcfbfa;
+
+	/* Inks */
+	--color-ink-900: #1a1815;       /* Sâu nhất - gần như đen mực in */
+	--color-ink-800: #2c2823;       /* Chữ tiêu đề chính */
+	--color-ink-700: #423d36;       /* Chữ nội dung */
+	--color-ink-500: #736b60;       /* Chữ phụ, caption */
+	--color-ink-300: #b5ad9f;       /* Đường kẻ nhẹ */
+	--color-ink-100: #eae4d8;       /* Viền thẻ, separator */
+
+	/* Artisan Accents (Mạ vàng vintage, đồng cổ & màu đất) */
+	--color-gold: #c28e46;
+	--color-gold-hover: #a67431;
+	--color-gold-light: #f6eedf;
+	--color-terracotta: #b35639;
+	--color-terracotta-soft: #f7ede8;
+
+	/* Elevation & Shadows */
+	--shadow-xs: 0 1px 3px rgba(35, 25, 15, 0.05);
+	--shadow-sm: 0 4px 12px rgba(35, 25, 15, 0.06);
+	--shadow-md: 0 10px 25px -5px rgba(35, 25, 15, 0.08), 0 8px 10px -6px rgba(35, 25, 15, 0.04);
+	--shadow-lg: 0 20px 35px -10px rgba(35, 25, 15, 0.12), 0 10px 15px -5px rgba(35, 25, 15, 0.06);
+	--shadow-letterpress: 0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 1px rgba(0, 0, 0, 0.15);
+
+	/* Borders & Radii */
+	--radius-sm: 8px;
+	--radius-md: 14px;
+	--radius-lg: 20px;
+	--radius-full: 9999px;
+
+	/* Transitions */
+	--transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	--transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. CSS RESET & GLOBAL BASE STYLES
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 16px;
+	scroll-behavior: smooth;
+	scroll-padding-top: 100px; /* Bù đắp cho fixed/sticky header */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	font-family: var(--font-body);
+	font-size: 1rem;
+	line-height: 1.7;
+	color: var(--color-ink-700);
+	background-color: var(--color-bg);
+	background-image: 
+		radial-gradient(circle at 100% 0%, rgba(194, 142, 70, 0.07) 0%, transparent 40%),
+		radial-gradient(circle at 0% 100%, rgba(179, 86, 57, 0.05) 0%, transparent 45%);
+	background-attachment: fixed;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Selection highlight */
+::selection {
+	background-color: var(--color-gold);
+	color: #ffffff;
+}
+
+/* Typography Base */
+h1, h2, h3, h4 {
+	font-family: var(--font-heading);
+	color: var(--color-ink-800);
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+}
+
+p {
+	margin-bottom: 1.25rem;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+
+a {
+	color: var(--color-gold-hover);
+	text-decoration: none;
+	transition: color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+a:hover {
+	color: var(--color-ink-900);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+ul {
+	list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. SITE HEADER & NAVIGATION
+   -------------------------------------------------------------------------- */
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	background: rgba(247, 244, 238, 0.94);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid var(--color-ink-100);
+	box-shadow: 0 4px 20px rgba(35, 25, 15, 0.04);
+	padding: 1.1rem 2rem;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem 2rem;
+	transition: all var(--transition-smooth);
+}
+
+/* Tên thương hiệu — Logo Letterpress */
+.site-name {
+	font-family: var(--font-brand);
+	font-size: 1.75rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	color: var(--color-ink-900);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	text-transform: uppercase;
+	position: relative;
+}
+
+/* Huy hiệu monogram giả lập con dấu in thủ công trước logo */
+.site-name::before {
+	content: "✦";
+	display: inline-block;
+	font-size: 1.15rem;
+	color: var(--color-gold);
+	transition: transform var(--transition-smooth);
+}
+
+.site-name:hover::before {
+	transform: rotate(90deg) scale(1.15);
+}
+
+.site-name:hover {
+	color: var(--color-gold-hover);
+}
+
+/* Slogan bên dưới hoặc cạnh thương hiệu */
+.tagline {
+	font-family: var(--font-heading);
+	font-style: italic;
+	font-size: 0.92rem;
+	color: var(--color-ink-500);
+	margin-bottom: 0;
+	letter-spacing: 0.02em;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.tagline::before {
+	content: "—";
+	color: var(--color-gold);
+}
+
+/* Menu điều hướng chính */
+.main-nav {
+	margin-left: auto;
+}
+
+.main-nav ul {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.main-nav a {
+	display: inline-block;
+	padding: 0.55rem 1.1rem;
+	font-family: var(--font-body);
+	font-size: 0.92rem;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	color: var(--color-ink-700);
+	border-radius: var(--radius-full);
+	position: relative;
+	transition: all var(--transition-smooth);
+}
+
+.main-nav a::after {
+	content: "";
+	position: absolute;
+	bottom: 6px;
+	left: 50%;
+	width: 0;
+	height: 2px;
+	background: var(--color-gold);
+	border-radius: 2px;
+	transition: all var(--transition-smooth);
+	transform: translateX(-50%);
+}
+
+.main-nav a:hover {
+	color: var(--color-ink-900);
+	background: rgba(194, 142, 70, 0.08);
+}
+
+.main-nav a:hover::after {
+	width: 45%;
+}
+
+/* --------------------------------------------------------------------------
+   4. CHÍNH & SIDEBAR LAYOUT (GRID CONTAINER)
+   -------------------------------------------------------------------------- */
+.layout {
+	max-width: 1240px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 3rem 1.5rem 4rem;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 2.5rem;
+	align-items: start;
+	flex: 1;
+}
+
+main {
+	min-width: 0; /* Tránh tràn grid */
+	display: flex;
+	flex-direction: column;
+	gap: 3.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. BÀI VIẾT GIỚI THIỆU (#gioi-thieu)
+   -------------------------------------------------------------------------- */
+#gioi-thieu {
+	background: var(--color-surface);
+	border-radius: var(--radius-lg);
+	padding: 3rem;
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-sm);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Dải hoa văn trang trí đỉnh bài viết */
+#gioi-thieu::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 5px;
+	background: linear-gradient(90deg, var(--color-gold), var(--color-terracotta), var(--color-gold));
+}
+
+#gioi-thieu h1 {
+	font-size: 2.5rem;
+	margin-bottom: 2rem;
+	color: var(--color-ink-900);
+	letter-spacing: -0.02em;
+	display: flex;
+	align-items: center;
+	gap: 0.8rem;
+}
+
+#gioi-thieu h1::after {
+	content: "";
+	flex: 1;
+	height: 1px;
+	background: linear-gradient(90deg, var(--color-gold), transparent);
+	margin-left: 0.5rem;
+}
+
+/* Khối hình ảnh đại diện */
+#gioi-thieu figure {
+	margin: 0 0 2rem 0;
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	background: var(--color-bg-alt);
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-md);
+	transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+#gioi-thieu figure:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-lg);
+}
+
+#gioi-thieu figure img {
+	width: 100%;
+	max-height: 480px;
+	object-fit: cover;
+	transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#gioi-thieu figure:hover img {
+	transform: scale(1.025);
+}
+
+#gioi-thieu figcaption {
+	padding: 0.9rem 1.25rem;
+	font-size: 0.88rem;
+	color: var(--color-ink-500);
+	font-style: italic;
+	font-family: var(--font-heading);
+	background: var(--color-surface-soft);
+	border-top: 1px solid var(--color-ink-100);
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+#gioi-thieu figcaption::before {
+	content: "📷";
+	font-style: normal;
+	font-size: 0.9rem;
+}
+
+/* Đoạn văn giới thiệu */
+#gioi-thieu p {
+	font-size: 1.1rem;
+	line-height: 1.85;
+	color: var(--color-ink-700);
+}
+
+/* Chữ hoa đầu dòng nghệ thuật (Drop Cap) cho đoạn mở đầu */
+#gioi-thieu p:first-of-type::first-letter {
+	font-family: var(--font-brand);
+	font-size: 3.6rem;
+	line-height: 0.85;
+	float: left;
+	margin: 0.15rem 0.75rem 0 0;
+	color: var(--color-gold);
+	font-weight: 800;
+	text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+
+#gioi-thieu strong {
+	color: var(--color-ink-900);
+	font-weight: 600;
+	background: linear-gradient(180deg, transparent 65%, rgba(194, 142, 70, 0.22) 65%);
+	padding: 0 3px;
+}
+
+/* --------------------------------------------------------------------------
+   6. GIÁ TRỊ CỐT LÕI (#gia-tri)
+   -------------------------------------------------------------------------- */
+#gia-tri {
+	position: relative;
+}
+
+#gia-tri h2,
+#doi-ngu h2,
+#lien-he h2,
+.sidebar h2 {
+	font-size: 1.85rem;
+	margin-bottom: 1.6rem;
+	color: var(--color-ink-900);
+	position: relative;
+	display: inline-block;
+}
+
+#gia-tri h2::after,
+#doi-ngu h2::after,
+#lien-he h2::after,
+.sidebar h2::after {
+	content: "";
+	position: absolute;
+	bottom: -6px;
+	left: 0;
+	width: 48px;
+	height: 3px;
+	background: var(--color-gold);
+	border-radius: 2px;
+}
+
+/* Danh sách thẻ giá trị */
+.value-list {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+	counter-reset: value-counter;
+}
+
+.value-card {
+	background: var(--color-surface);
+	border-radius: var(--radius-md);
+	padding: 2.2rem 1.6rem;
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-sm);
+	position: relative;
+	counter-increment: value-counter;
+	display: flex;
+	flex-direction: column;
+	transition: all var(--transition-smooth);
+	overflow: hidden;
+}
+
+/* Số thứ tự phong cách tem in mạ vàng */
+.value-card::before {
+	content: "0" counter(value-counter);
+	font-family: var(--font-brand);
+	font-size: 2.8rem;
+	font-weight: 900;
+	color: rgba(194, 142, 70, 0.15);
+	position: absolute;
+	top: 0.8rem;
+	right: 1.2rem;
+	line-height: 1;
+	transition: color var(--transition-smooth), transform var(--transition-smooth);
+}
+
+.value-card::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4px;
+	height: 100%;
+	background: var(--color-gold);
+	opacity: 0;
+	transition: opacity var(--transition-smooth);
+}
+
+.value-card:hover {
+	transform: translateY(-6px);
+	box-shadow: var(--shadow-md);
+	border-color: var(--color-gold);
+}
+
+.value-card:hover::before {
+	color: rgba(194, 142, 70, 0.35);
+	transform: scale(1.08);
+}
+
+.value-card:hover::after {
+	opacity: 1;
+}
+
+.value-card h3 {
+	font-size: 1.35rem;
+	margin-bottom: 0.75rem;
+	color: var(--color-ink-800);
+	position: relative;
+	z-index: 1;
+}
+
+.value-card p {
+	font-size: 0.96rem;
+	line-height: 1.65;
+	color: var(--color-ink-500);
+	margin-bottom: 0;
+	position: relative;
+	z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   7. ĐỘI NGŨ (#doi-ngu)
+   -------------------------------------------------------------------------- */
+#doi-ngu {
+	position: relative;
+}
+
+.team-list {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.75rem;
+}
+
+.member {
+	background: var(--color-surface);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-sm);
+	text-align: center;
+	transition: all var(--transition-smooth);
+	display: flex;
+	flex-direction: column;
+}
+
+.member:hover {
+	transform: translateY(-6px);
+	box-shadow: var(--shadow-md);
+	border-color: rgba(194, 142, 70, 0.4);
+}
+
+/* Khung hình chân dung nhân sự */
+.member img {
+	width: 100%;
+	aspect-ratio: 1 / 1.1;
+	object-fit: cover;
+	object-position: top center;
+	transition: transform 0.5s ease, filter 0.5s ease;
+	filter: contrast(1.02) saturate(0.96);
+}
+
+.member:hover img {
+	transform: scale(1.04);
+	filter: contrast(1.06) saturate(1.05);
+}
+
+.member h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+	margin-bottom: 0.35rem;
+	color: var(--color-ink-900);
+}
+
+.member p {
+	font-size: 0.88rem;
+	color: var(--color-gold-hover);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	padding: 0 1rem 1.4rem;
+	margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   8. FORM LIÊN HỆ (#lien-he)
+   -------------------------------------------------------------------------- */
+#lien-he {
+	background: var(--color-surface);
+	border-radius: var(--radius-lg);
+	padding: 3rem;
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-sm);
+	position: relative;
+}
+
+.contact-form {
+	margin-top: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.contact-form p {
+	margin-bottom: 0;
+}
+
+.contact-form label {
+	display: inline-block;
+	font-size: 0.88rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--color-ink-800);
+	margin-bottom: 0.45rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+	width: 100%;
+	padding: 0.85rem 1.15rem;
+	font-family: var(--font-body);
+	font-size: 0.98rem;
+	color: var(--color-ink-900);
+	background: var(--color-surface-soft);
+	border: 1.5px solid var(--color-ink-100);
+	border-radius: var(--radius-sm);
+	outline: none;
+	transition: all var(--transition-fast);
+}
+
+.contact-form textarea {
+	resize: vertical;
+	min-height: 120px;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+	background: #ffffff;
+	border-color: var(--color-gold);
+	box-shadow: 0 0 0 4px rgba(194, 142, 70, 0.15);
+}
+
+/* Nút gửi form Letterpress phong cách cao cấp */
+.contact-form button[type="submit"] {
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.95rem 2.25rem;
+	font-family: var(--font-body);
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #ffffff;
+	background: linear-gradient(135deg, var(--color-ink-900), var(--color-ink-800));
+	border: 1px solid var(--color-ink-800);
+	border-radius: var(--radius-full);
+	box-shadow: 0 4px 14px rgba(26, 24, 21, 0.25);
+	transition: all var(--transition-smooth);
+	position: relative;
+	overflow: hidden;
+}
+
+.contact-form button[type="submit"]:hover {
+	background: linear-gradient(135deg, var(--color-gold), var(--color-gold-hover));
+	border-color: var(--color-gold-hover);
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(194, 142, 70, 0.35);
+}
+
+.contact-form button[type="submit"]:active {
+	transform: translateY(1px);
+	box-shadow: 0 2px 8px rgba(194, 142, 70, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   9. SIDEBAR BÀI VIẾT VÀ MẠNG XÃ HỘI
+   -------------------------------------------------------------------------- */
+.sidebar {
+	background: var(--color-surface);
+	border-radius: var(--radius-lg);
+	padding: 2.2rem 1.75rem;
+	border: 1px solid var(--color-ink-100);
+	box-shadow: var(--shadow-sm);
+	position: sticky;
+	top: 100px; /* Ghim sidebar khi cuộn màn hình desktop */
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.sidebar h2 {
+	font-size: 1.35rem;
+	margin-bottom: 0.5rem;
+}
+
+.sidebar h2::after {
+	width: 36px;
+	height: 2px;
+}
+
+/* Danh sách bài viết gần đây */
+.sidebar .recent {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+	margin-top: 0.5rem;
+}
+
+.sidebar .recent li {
+	position: relative;
+	padding-left: 1.25rem;
+}
+
+/* Mũi tên phong cách thợ in */
+.sidebar .recent li::before {
+	content: "›";
+	position: absolute;
+	left: 0;
+	top: -2px;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: var(--color-gold);
+	transition: transform var(--transition-fast);
+}
+
+.sidebar .recent a {
+	font-size: 0.95rem;
+	font-weight: 500;
+	color: var(--color-ink-800);
+	line-height: 1.5;
+	display: inline-block;
+	transition: all var(--transition-fast);
+}
+
+.sidebar .recent li:hover::before {
+	transform: translateX(3px);
+	color: var(--color-terracotta);
+}
+
+.sidebar .recent a:hover {
+	color: var(--color-terracotta);
+	transform: translateX(3px);
+}
+
+/* Box mạng xã hội */
+.sidebar p {
+	margin-top: 0.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px dashed var(--color-ink-100);
+	font-size: 0.9rem;
+	color: var(--color-ink-500);
+	line-height: 1.6;
+}
+
+.sidebar p a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-weight: 700;
+	color: #1877f2;
+	background: rgba(24, 119, 242, 0.08);
+	padding: 0.2rem 0.65rem;
+	border-radius: var(--radius-sm);
+	transition: all var(--transition-fast);
+}
+
+.sidebar p a:hover {
+	background: #1877f2;
+	color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   10. SITE FOOTER
+   -------------------------------------------------------------------------- */
+.site-footer {
+	background: var(--color-ink-900);
+	color: #eae5dc;
+	margin-top: auto;
+	border-top: 3px solid var(--color-gold);
+	padding: 4rem 2rem 2.5rem;
+}
+
+.footer-cols {
+	max-width: 1240px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 2.5rem;
+	padding-bottom: 3rem;
+	border-bottom: 1px solid rgba(234, 228, 216, 0.12);
+}
+
+.footer-cols li {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+}
+
+.footer-cols h3 {
+	font-family: var(--font-brand);
+	font-size: 1.05rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--color-gold);
+	position: relative;
+	padding-bottom: 0.5rem;
+}
+
+.footer-cols h3::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 28px;
+	height: 1.5px;
+	background: rgba(194, 142, 70, 0.6);
+}
+
+.footer-cols p {
+	font-size: 0.92rem;
+	line-height: 1.65;
+	color: #beb7ab;
+	margin-bottom: 0;
+}
+
+/* Dòng bản quyền copyright */
+.copyright {
+	max-width: 1240px;
+	margin: 2rem auto 0;
+	text-align: center;
+	color: #8c8578;
+	font-size: 0.85rem;
+}
+
+.copyright small {
+	font-size: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   11. RESPONSIVE DESIGN (MEDIA QUERIES)
+   -------------------------------------------------------------------------- */
+
+/* Breakpoint: Desktop nhỏ & Tablet ngang (<= 1024px) */
+@media (max-width: 1024px) {
+	.layout {
+		grid-template-columns: minmax(0, 1fr) 280px;
+		gap: 2rem;
+		padding: 2.5rem 1.5rem;
+	}
+
+	.footer-cols {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2.5rem 2rem;
+	}
+
+	#gioi-thieu {
+		padding: 2.5rem 2rem;
+	}
+
+	#gioi-thieu h1 {
+		font-size: 2.2rem;
+	}
+}
+
+/* Breakpoint: Tablet dọc & Màn hình di động lớn (<= 860px) */
+@media (max-width: 860px) {
+	.site-header {
+		padding: 1rem 1.25rem;
+	}
+
+	.layout {
+		grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+		gap: 3rem;
+		padding: 2rem 1.25rem;
+	}
+
+	.sidebar {
+		position: static; /* Huỷ sticky khi xuống 1 cột */
+	}
+
+	.value-list {
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+	}
+
+	.team-list {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.25rem;
+	}
+
+	#gioi-thieu {
+		padding: 2rem 1.5rem;
+	}
+
+	#lien-he {
+		padding: 2rem 1.5rem;
+	}
+}
+
+/* Breakpoint: Mobile (<= 640px) */
+@media (max-width: 640px) {
+	.site-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	.main-nav {
+		width: 100%;
+		margin-left: 0;
+	}
+
+	.main-nav ul {
+		width: 100%;
+		justify-content: flex-start;
+		overflow-x: auto;
+		padding-bottom: 0.35rem;
+		-webkit-overflow-scrolling: touch;
+		gap: 0.35rem;
+	}
+
+	.main-nav a {
+		padding: 0.45rem 0.85rem;
+		font-size: 0.85rem;
+		white-space: nowrap;
+		background: rgba(194, 142, 70, 0.08);
+	}
+
+	#gioi-thieu h1 {
+		font-size: 1.85rem;
+	}
+
+	#gioi-thieu p {
+		font-size: 1rem;
+	}
+
+	.team-list {
+		grid-template-columns: 1fr;
+		max-width: 360px;
+		margin: 0 auto;
+	}
+
+	.member img {
+		aspect-ratio: 1 / 1;
+	}
+
+	.footer-cols {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.site-footer {
+		padding: 3rem 1.25rem 2rem;
+	}
+}
+
+/* Breakpoint: Màn hình cực nhỏ (<= 380px) */
+@media (max-width: 380px) {
+	.site-name {
+		font-size: 1.4rem;
+	}
+
+	#gioi-thieu,
+	#lien-he,
+	.sidebar {
+		padding: 1.5rem 1rem;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   12. TỐI ƯU HÓA ACCESSIBILITY & PRINT
+   -------------------------------------------------------------------------- */
+/* Focus styles cho người dùng bàn phím */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+	outline: 2px solid var(--color-gold);
+	outline-offset: 3px;
+}
+
+/* In ấn (Print Stylesheet) — Hoàn hảo cho xưởng in thủ công! */
+@media print {
+	.site-header,
+	.sidebar,
+	.contact-form,
+	.site-footer {
+		display: none !important;
+	}
+
+	body {
+		background: #ffffff;
+		color: #000000;
+	}
+
+	.layout {
+		max-width: 100%;
+		padding: 0;
+	}
+
+	#gioi-thieu,
+	#gia-tri,
+	#doi-ngu {
+		box-shadow: none;
+		border: none;
+		padding: 0;
+		page-break-inside: avoid;
+	}
+}
